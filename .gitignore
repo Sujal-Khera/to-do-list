@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.db
+*.sqlite3
+
+# Virtual environments
+venv/
+env/
+
+# Node modules
+node_modules/
+
+# Flatpickr source folder (not needed in repo)
+flatpickr-master/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.vscode/
+.idea/
+
+# Flask instance folder
+instance/
+
+# Local config
+.env
+.env.* 

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-Assisted Todo List</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='flatpickr/flatpickr.min.css') }}">
+</head>
+<body>
+    <div class="main-bg-gradient"></div>
+    <div class="container mt-5 position-relative" style="z-index:2;">
+        <div class="text-center mb-4">
+            <span class="todo-icon"><i class="fa-solid fa-list-check fa-2x"></i></span>
+            <h1 class="d-inline align-middle ms-2">AI-Assisted Todo List</h1>
+        </div>
+        <!-- Add Task Form -->
+        <div class="card mb-4 shadow-lg animated-card">
+            <div class="card-body">
+                <form id="taskForm">
+                    <div class="row g-3 align-items-end">
+                        <div class="col-md-6">
+                            <label for="taskTitle" class="form-label">Task</label>
+                            <input type="text" class="form-control form-control-lg" id="taskTitle" placeholder="Enter task title" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="dueDate" class="form-label">Due Date</label>
+                            <div class="date-picker-container single-input">
+                                <i class="fa fa-calendar"></i>
+                                <input type="text" class="form-control" id="dueDate" aria-label="Task due date" required>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="dueTime" class="form-label">Due Time</label>
+                            <div class="time-picker-container single-input">
+                                <i class="fa fa-clock"></i>
+                                <input type="text" class="form-control" id="dueTime" aria-label="Task due time" required>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-primary btn-lg w-100 h-100">
+                                <i class="fa fa-plus me-1"></i> Add
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!-- Task List -->
+        <div class="card shadow animated-card">
+            <div class="card-body">
+                <h5 class="card-title mb-3"><i class="fa-solid fa-tasks me-2"></i>Tasks</h5>
+                <div id="taskList" class="list-group">
+                    <!-- Tasks will be added here dynamically -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    <script src="{{ url_for('static', filename='flatpickr/flatpickr.min.js') }}"></script>
+    <script>
+        flatpickr("#dueDate", {
+            dateFormat: "Y-m-d"
+        });
+        flatpickr("#dueTime", {
+            enableTime: true,
+            noCalendar: true,
+            dateFormat: "H:i",
+            time_24hr: true // or false for AM/PM
+        });
+    </script>
+</body>
+</html> 
