@@ -464,52 +464,50 @@ h1 {
     color: white;
 }
 
+/* Task Actions */
 .task-actions {
     display: flex;
-    gap: var(--spacing-xs);
-    margin-left: var(--spacing-sm);
-    opacity: 0;
-    transition: var(--transition);
+    gap: var(--spacing-sm);
+    align-items: center;
+    opacity: 1 !important;
 }
 
-.task-item:hover .task-actions {
-    opacity: 1;
-}
-
-.task-btn {
-    background: none;
-    border: none;
-    padding: var(--spacing-xs);
+/* Round Buttons */
+.btn-circle {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    background: var(--light-bg);
+    border: 2px solid var(--primary-color);
+    color: var(--primary-color);
     cursor: pointer;
-    transition: var(--transition);
-    color: var(--text-secondary);
-    border-radius: var(--border-radius-sm);
-    position: relative;
 }
 
-.task-btn::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: currentColor;
-    opacity: 0;
-    border-radius: var(--border-radius-sm);
-    transition: var(--transition);
+.btn-circle:hover {
+    transform: scale(1.1);
+    box-shadow: var(--shadow-medium);
+    background: var(--primary-color);
+    color: white;
 }
 
-.task-btn:hover {
+.btn-circle i {
+    font-size: 1.1rem;
+}
+
+[data-theme="dark"] .btn-circle {
+    background: var(--light-bg);
+    border-color: var(--primary-color);
     color: var(--primary-color);
 }
 
-.task-btn:hover::before {
-    opacity: 0.1;
-}
-
-.task-btn.delete:hover {
-    color: var(--danger-color);
+[data-theme="dark"] .btn-circle:hover {
+    background: var(--primary-color);
+    color: white;
 }
 
 /* Progress Bar */
@@ -1126,4 +1124,48 @@ h1 {
 [data-theme="dark"] .flatpickr-time input:hover,
 [data-theme="dark"] .flatpickr-time input:focus {
     background: var(--primary-light);
+}
+
+.notification.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.notification.success {
+    background-color: #4CAF50;
+}
+
+.notification.error {
+    background-color: #f44336;
+}
+
+.notification.info {
+    background-color: #2196F3;
+}
+
+/* Import/Export Button Styles */
+.task-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.task-actions button {
+    padding: 8px 15px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    background-color: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.task-actions button:hover {
+    background-color: #f5f5f5;
+    border-color: #ccc;
+}
+
+.task-actions button i {
+    font-size: 16px;
 }
