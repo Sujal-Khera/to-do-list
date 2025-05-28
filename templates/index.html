@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Advanced Task Manager</title>
+    <title>Smart To-Do List</title>
     
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -23,8 +23,8 @@
     <div class="container">
         <!-- Header -->
         <header class="header">
-            <h1>Task Manager</h1>
-            <p class="lead">Organize your tasks efficiently with our advanced task management system</p>
+            <h1>Smart To-Do List</h1>
+            <p class="lead">Stay organized, boost productivity, and never miss a deadline with our intelligent task management system</p>
         </header>
 
         <!-- Statistics Card -->
@@ -62,31 +62,31 @@
             <div class="card-body">
                 <h2 class="card-title">
                     <i class="fas fa-plus-circle"></i>
-                    Add New Task
+                    Create New Task
                 </h2>
                 <form id="taskForm">
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="taskTitle">Title</label>
-                                <input type="text" id="taskTitle" class="form-control" required>
+                                <label for="taskTitle">Task Title</label>
+                                <input type="text" id="taskTitle" class="form-control" required placeholder="Enter task title">
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="priority">Priority</label>
+                                <label for="priority">Priority Level</label>
                                 <select id="priority" class="form-select">
-                                    <option value="high">High</option>
-                                    <option value="medium" selected>Medium</option>
-                                    <option value="low">Low</option>
+                                    <option value="high">High Priority</option>
+                                    <option value="medium" selected>Medium Priority</option>
+                                    <option value="low">Low Priority</option>
                                 </select>
                             </div>
                         </div>
                     </div>
                     
                     <div class="form-group">
-                        <label for="taskDescription">Description</label>
-                        <textarea id="taskDescription" class="form-control" rows="3"></textarea>
+                        <label for="taskDescription">Task Description</label>
+                        <textarea id="taskDescription" class="form-control" rows="3" placeholder="Add details about your task..."></textarea>
                     </div>
                     
                     <div class="row">
@@ -95,7 +95,7 @@
                                 <label for="dueDate">Due Date</label>
                                 <div class="date-picker-container">
                                     <i class="fas fa-calendar"></i>
-                                    <input type="text" id="dueDate" class="form-control flatpickr-input" placeholder="Select date">
+                                    <input type="text" id="dueDate" class="form-control flatpickr-input" placeholder="Select due date">
                                 </div>
                             </div>
                         </div>
@@ -104,19 +104,19 @@
                                 <label for="dueTime">Due Time</label>
                                 <div class="time-picker-container">
                                     <i class="fas fa-clock"></i>
-                                    <input type="text" id="dueTime" class="form-control flatpickr-input" placeholder="Select time">
+                                    <input type="text" id="dueTime" class="form-control flatpickr-input" placeholder="Select due time">
                                 </div>
                             </div>
                         </div>
                     </div>
                     
                     <div class="form-group">
-                        <label for="taskTags">Tags (comma-separated)</label>
-                        <input type="text" id="taskTags" class="form-control" placeholder="work, urgent, project">
+                        <label for="taskTags">Categories (comma-separated)</label>
+                        <input type="text" id="taskTags" class="form-control" placeholder="work, personal, project, meeting">
                     </div>
                     
                     <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-plus"></i> Add Task
+                        <i class="fas fa-plus"></i> Add to List
                     </button>
                 </form>
             </div>
@@ -128,18 +128,18 @@
                 <div class="row">
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label for="searchInput">Search</label>
-                            <input type="text" id="searchInput" class="form-control" placeholder="Search tasks...">
+                            <label for="searchInput">Search Tasks</label>
+                            <input type="text" id="searchInput" class="form-control" placeholder="Search by title, description, or category...">
                         </div>
                     </div>
                     <div class="col-md-2">
                         <div class="form-group">
                             <label for="priorityFilter">Priority</label>
                             <select id="priorityFilter" class="form-select">
-                                <option value="all">All</option>
-                                <option value="high">High</option>
-                                <option value="medium">Medium</option>
-                                <option value="low">Low</option>
+                                <option value="all">All Priorities</option>
+                                <option value="high">High Priority</option>
+                                <option value="medium">Medium Priority</option>
+                                <option value="low">Low Priority</option>
                             </select>
                         </div>
                     </div>
@@ -147,9 +147,9 @@
                         <div class="form-group">
                             <label for="statusFilter">Status</label>
                             <select id="statusFilter" class="form-select">
-                                <option value="all">All</option>
-                                <option value="active">Active</option>
-                                <option value="completed">Completed</option>
+                                <option value="all">All Tasks</option>
+                                <option value="active">Active Tasks</option>
+                                <option value="completed">Completed Tasks</option>
                             </select>
                         </div>
                     </div>
@@ -158,9 +158,9 @@
                             <label for="sortBy">Sort By</label>
                             <select id="sortBy" class="form-select">
                                 <option value="due_date">Due Date</option>
-                                <option value="priority">Priority</option>
-                                <option value="created_at">Created Date</option>
-                                <option value="title">Title</option>
+                                <option value="priority">Priority Level</option>
+                                <option value="created_at">Creation Date</option>
+                                <option value="title">Task Title</option>
                             </select>
                         </div>
                     </div>
@@ -168,7 +168,7 @@
                         <div class="form-group">
                             <label>&nbsp;</label>
                             <button id="clearFilters" class="btn btn-secondary w-100">
-                                <i class="fas fa-times"></i> Clear
+                                <i class="fas fa-times"></i> Reset Filters
                             </button>
                         </div>
                     </div>
@@ -182,7 +182,7 @@
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h2 class="card-title">
                         <i class="fas fa-tasks"></i>
-                        Tasks
+                        Your Tasks
                     </h2>
                     <div class="task-actions">
                         <button id="exportTasks" class="btn btn-outline-primary" data-tooltip="Export Tasks" title="Export Tasks">
@@ -201,7 +201,7 @@
                 </div>
                 
                 <div class="text-center mt-3">
-                    <span id="taskCount">0</span> tasks found
+                    <span id="taskCount">0</span> tasks in your list
                 </div>
             </div>
         </div>

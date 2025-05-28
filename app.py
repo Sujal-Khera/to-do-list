@@ -255,6 +255,19 @@ def get_stats():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@app.route('/api/tasks/sync', methods=['POST'])
+def sync_tasks():
+    """Sync tasks between frontend and backend"""
+    try:
+        tasks = request.get_json()
+        if not isinstance(tasks, list):
+            return jsonify({'error': 'Invalid tasks format'}), 400
+            
+        write_tasks(tasks)
+        return jsonify({'message': 'Tasks synchronized successfully'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 @app.errorhandler(404)
 def not_found(error):
     return jsonify({'error': 'Not found'}), 404

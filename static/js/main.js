@@ -37,6 +37,7 @@ class TaskManager {
         this.initializeDatePickers();
         this.renderTasks();
         this.updateStats();
+        this.checkDeadlines();
     }
 
     initializeDatePickers() {
@@ -152,20 +153,68 @@ class TaskManager {
         this.updateStats();
         this.taskForm.reset();
         
-        showNotification('Task added successfully!', 'success');
+        // Success messages for adding task
+        const successMessages = [
+            `✨ "${task.title}" added successfully!`,
+            `✅ New task "${task.title}" created!`,
+            `🎯 "${task.title}" added to your list!`,
+            `📝 "${task.title}" saved successfully!`
+        ];
+        
+        showNotification(
+            successMessages[Math.floor(Math.random() * successMessages.length)],
+            'success'
+        );
+        
+        // Check if the new task is due soon
+        const dueDate = new Date(task.dueDate + 'T' + task.dueTime);
+        const now = new Date();
+        const timeUntilDue = dueDate - now;
+        
+        if (timeUntilDue <= 24 * 60 * 60 * 1000) {
+            const hoursUntilDue = Math.round(timeUntilDue / (1000 * 60 * 60));
+            if (hoursUntilDue <= 0) {
+                showNotification(`⚠️ "${task.title}" is overdue!`, 'error');
+            } else if (hoursUntilDue <= 1) {
+                showNotification(`⏰ "${task.title}" is due within an hour!`, 'warning');
+            } else {
+                showNotification(`📅 "${task.title}" is due in ${hoursUntilDue} hours!`, 'info');
+            }
+        }
     }
 
     toggleTask(id) {
-        this.tasks = this.tasks.map(task => {
-            if (task.id === id) {
-                return { ...task, completed: !task.completed };
+        const task = this.tasks.find(t => t.id === id);
+        this.tasks = this.tasks.map(t => {
+            if (t.id === id) {
+                return { ...t, completed: !t.completed };
             }
-            return task;
+            return t;
         });
 
         this.saveTasks();
         this.renderTasks();
         this.updateStats();
+
+        // Add completion notification
+        if (task) {
+            const messages = !task.completed ? [
+                `🎉 "${task.title}" completed! Great job!`,
+                `✅ "${task.title}" marked as done!`,
+                `✨ "${task.title}" task completed successfully!`,
+                `🌟 "${task.title}" is now complete!`
+            ] : [
+                `📝 "${task.title}" marked as incomplete`,
+                `🔄 "${task.title}" needs attention again`,
+                `⏳ "${task.title}" is back on your list`,
+                `📋 "${task.title}" is now pending`
+            ];
+            
+            showNotification(
+                messages[Math.floor(Math.random() * messages.length)],
+                !task.completed ? 'success' : 'info'
+            );
+        }
     }
 
     deleteTask(id) {
@@ -175,7 +224,19 @@ class TaskManager {
         this.renderTasks();
         this.updateStats();
         
-        showNotification(`Task "${task.title}" deleted!`, 'warning');
+        if (task) {
+            const messages = [
+                `🗑️ "${task.title}" deleted!`,
+                `❌ "${task.title}" removed from your list`,
+                `📤 "${task.title}" has been deleted`,
+                `🚫 "${task.title}" removed successfully`
+            ];
+            
+            showNotification(
+                messages[Math.floor(Math.random() * messages.length)],
+                'warning'
+            );
+        }
     }
 
     editTask(id) {
@@ -388,7 +449,74 @@ class TaskManager {
     }
 
     saveTasks() {
+        // Save to localStorage
         localStorage.setItem('tasks', JSON.stringify(this.tasks));
+        
+        // Sync with backend
+        fetch('/api/tasks/sync', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(this.tasks)
+        }).catch(error => {
+            console.error('Error syncing tasks with backend:', error);
+            showNotification('Error syncing tasks with server', 'error');
+        });
+    }
+
+    checkDeadlines() {
+        const now = new Date();
+        const oneHourFromNow = new Date(now.getTime() + 60 * 60 * 1000);
+        const oneDayFromNow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+
+        this.tasks.forEach(task => {
+            if (task.completed) return;
+
+            const dueDate = new Date(task.dueDate + 'T' + task.dueTime);
+            const timeUntilDue = dueDate - now;
+            const hoursUntilDue = timeUntilDue / (1000 * 60 * 60);
+            const minutesUntilDue = Math.floor((timeUntilDue % (1000 * 60 * 60)) / (1000 * 60));
+
+            // Only show notification if it's a new deadline (not already notified)
+            const notificationKey = `notified_${task.id}_${Math.floor(hoursUntilDue)}`;
+            if (localStorage.getItem(notificationKey)) return;
+
+            // Generate varied messages based on time remaining
+            if (timeUntilDue < 0) {
+                const overdueHours = Math.abs(Math.floor(hoursUntilDue));
+                const messages = [
+                    `⚠️ "${task.title}" is overdue!`,
+                    `❗ "${task.title}" is past its deadline!`,
+                    `🚨 "${task.title}" needs your attention - it's overdue!`,
+                    `⏰ "${task.title}" was due ${overdueHours} hour${overdueHours !== 1 ? 's' : ''} ago!`
+                ];
+                showNotification(messages[Math.floor(Math.random() * messages.length)], 'error');
+                localStorage.setItem(notificationKey, 'true');
+            } else if (timeUntilDue > 0 && timeUntilDue <= 60 * 60 * 1000) {
+                const messages = [
+                    `⏳ "${task.title}" is due in ${minutesUntilDue} minutes!`,
+                    `⚡ "${task.title}" needs your attention - due soon!`,
+                    `🎯 "${task.title}" deadline approaching - ${minutesUntilDue} minutes left!`,
+                    `⏰ "${task.title}" is due in less than an hour!`
+                ];
+                showNotification(messages[Math.floor(Math.random() * messages.length)], 'warning');
+                localStorage.setItem(notificationKey, 'true');
+            } else if (timeUntilDue > 0 && timeUntilDue <= 24 * 60 * 60 * 1000) {
+                const hours = Math.floor(hoursUntilDue);
+                const messages = [
+                    `📅 "${task.title}" is due in ${hours} hour${hours !== 1 ? 's' : ''}!`,
+                    `⏰ "${task.title}" deadline approaching - ${hours} hour${hours !== 1 ? 's' : ''} remaining!`,
+                    `🎯 "${task.title}" needs your attention - due today!`,
+                    `⚡ "${task.title}" is coming up - ${hours} hour${hours !== 1 ? 's' : ''} to go!`
+                ];
+                showNotification(messages[Math.floor(Math.random() * messages.length)], 'info');
+                localStorage.setItem(notificationKey, 'true');
+            }
+        });
+
+        // Check deadlines every minute
+        setTimeout(() => this.checkDeadlines(), 60 * 1000);
     }
 }
 
@@ -422,23 +550,57 @@ function showNotification(message, type = 'info') {
     
     const icon = document.createElement('i');
     icon.className = `fas ${type === 'success' ? 'fa-check-circle' : 
-                              type === 'error' ? 'fa-exclamation-circle' : 
-                              type === 'warning' ? 'fa-exclamation-triangle' : 
-                              'fa-info-circle'}`;
+                          type === 'error' ? 'fa-exclamation-circle' : 
+                          type === 'warning' ? 'fa-exclamation-triangle' : 
+                          'fa-info-circle'}`;
     
     notification.appendChild(icon);
     notification.appendChild(document.createTextNode(message));
     
-    document.body.appendChild(notification);
+    // Add to notifications container
+    const container = document.querySelector('.notifications-container');
+    container.appendChild(notification);
     
+    // Play sound based on notification type
+    const sounds = {
+        success: 'static/sounds/success.mp3',
+        error: 'static/sounds/error.mp3',
+        warning: 'static/sounds/warning.mp3',
+        info: 'static/sounds/info.mp3'
+    };
+
+    if (sounds[type]) {
+        const audio = new Audio(sounds[type]);
+        audio.volume = 0.5; // Increased volume to 50%
+        
+        // Try to play the sound
+        const playPromise = audio.play();
+        
+        if (playPromise !== undefined) {
+            playPromise.catch(error => {
+                console.log('Sound playback failed:', error);
+                // If autoplay is blocked, we'll try to play on next user interaction
+                document.addEventListener('click', () => {
+                    audio.play().catch(() => {});
+                }, { once: true });
+            });
+        }
+    }
+    
+    // Remove notification after delay
     setTimeout(() => {
-        notification.style.opacity = '0';
+        notification.style.animation = 'slideOut 0.3s ease-out forwards';
         setTimeout(() => notification.remove(), 300);
-    }, 3000);
+    }, 5000);
 }
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', () => {
+    // Create notifications container
+    const notificationsContainer = document.createElement('div');
+    notificationsContainer.className = 'notifications-container';
+    document.body.appendChild(notificationsContainer);
+
     // Initialize theme toggle
     themeToggle.addEventListener('click', toggleTheme);
     
@@ -449,6 +611,26 @@ document.addEventListener('DOMContentLoaded', () => {
     const gradient = document.createElement('div');
     gradient.className = 'main-bg-gradient';
     document.body.appendChild(gradient);
+    
+    // Preload notification sounds
+    const preloadSounds = () => {
+        const sounds = {
+            success: 'static/sounds/success.mp3',
+            error: 'static/sounds/error.mp3',
+            warning: 'static/sounds/warning.mp3',
+            info: 'static/sounds/info.mp3'
+        };
+
+        Object.values(sounds).forEach(soundUrl => {
+            const audio = new Audio(soundUrl);
+            audio.load();
+        });
+    };
+
+    // Try to preload sounds after user interaction
+    document.addEventListener('click', () => {
+        preloadSounds();
+    }, { once: true });
     
     console.log('Application initialized');
 }); 
